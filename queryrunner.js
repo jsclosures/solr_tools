@@ -10,6 +10,7 @@
  *                     (default: http://localhost:8983/solr)
  *   SOLR_USER         Optional basic-auth username
  *   SOLR_PASS         Optional basic-auth password
+ *   SOLR_CREDS        Optional basic64 encoded basic auth key
  *   SOURCE_FILE       source list of queries
  *   DRY_RUN           If "true", report only — do not call solrGet
  *
@@ -31,12 +32,13 @@ const CONTEXT = {lib: {http,https,URL,fs,readline}};
 CONTEXT.SOLR_URL = (process.env.SOLR_URL || 'http://localhost:8983/solr').replace(/\/+$/, '');
 CONTEXT.SOLR_USER = process.env.SOLR_USER || '';
 CONTEXT.SOLR_PASS = process.env.SOLR_PASS || '';
+CONTEXT.SOLR_CREDS = process.env.SOLR_CREDS || '';
 CONTEXT.SOURCE_FILE = process.env.SOURCE_FILE || './queries.csv';
 CONTEXT.DRY_RUN = String(process.env.DRY_RUN || '').toLowerCase() === 'true';
 
 function authHeaders(ctx) {
-  if (!ctx.SOLR_USER) return {};
-  const token = Buffer.from(`${ctx.SOLR_USER}:${ctx.SOLR_PASS}`).toString('base64');
+  if (!ctx.SOLR_USER && !ctx.SOLR_CREDS ) return {};
+  const token = ctx.SOLR_USER ? Buffer.from(`${ctx.SOLR_USER}:${ctx.SOLR_PASS}`).toString('base64') : ctx.SOLR_CREDS;
   return { Authorization: `Basic ${token}` };
 }
 

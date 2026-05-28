@@ -11,7 +11,7 @@
  *   SOLR_USER         Optional basic-auth username
  *   SOLR_PASS         Optional basic-auth password
  *   SOURCE_FILE       source list of queries
- *   DRY_RUN           If "true", report only — do not call ADDREPLICA
+ *   DRY_RUN           If "true", report only — do not call solrGet
  *
  * Usage:
  *   node solr-tools/ensure-replicas.js
@@ -109,11 +109,16 @@ function runQueries(ctx) {
     function readFunc(line) {
         let ctx = this.ctx;
         let solrPath = ctx.SOLR_URL + uriEncode(line);
+      if( !ctx.DRY_RUN == 'yes' ){
         solrGet(ctx,solrPath, { action: 'CLUSTERSTATUS' }, (err, body) => {
             if (err) 
                 console.log(`Error:         ${err}`);
             console.log(`Body:         ${body}`);
           });
+      }
+      else{
+        console.log(`Skipping:         ${line}`);
+      }
     }
 
     function completeFunc() {

@@ -110,7 +110,7 @@ function runQueries(ctx) {
     
     function readFunc(line) {
         let ctx = this.ctx;
-        let solrPath = ctx.SOLR_URL + uriEncode(line);
+        let solrPath = ctx.SOLR_URL + encodeURIComponent(line);
       if( !ctx.DRY_RUN == 'yes' ){
         solrGet(ctx,solrPath, { action: 'CLUSTERSTATUS' }, (err, body) => {
             if (err) 
